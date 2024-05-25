@@ -1,0 +1,11 @@
+CV 4 - Local Feature
+SIFT - Scale Invariant Feature Transform (SIFT)
+Parameters:
+    - Low-Constrast Extrema (Điểm cực tiểu đối sánh có độ tương phản thấp): Là các điểm chính được phát hiện trong
+      khu vực hình ảnh mà độ tương phản thấp so với các khu vực xung quanh.Chúng có thể tương ứng với các khu vực có sự
+      thay đổi nhẹ về độ sáng hoặc cấu trúc.
+    - Edge-Like Extrema (Điểm cực tiểu giống cạnh): Đây là các điểm chính được phát hiện tại các cạnh hoặc các góc trong
+      một hình, nơi có sự thay đổi đáng kể về độ sáng hoặc cấu trúc. Các điểm cực tiếu giống cạnh thường đáng tin cậy và
+      đặc trưng hơn so với các điểm chính được phát hiện trong các khu vực mịn. Chúng quan trọng vì chúng thường tương
+      ứng với các đặc điểm định rõ trong ảnh, chẳng hạn như góc hoặc cạnh. Có khả năng được so khớp đúng qua các hình ảnh
+
