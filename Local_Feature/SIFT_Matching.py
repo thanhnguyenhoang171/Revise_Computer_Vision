@@ -19,31 +19,31 @@ sift.setEdgeThreshold(5) # Edge-Like Extrema
 keypoints1, descriptors1 = sift.detectAndCompute(grayimg1, None) # None là mask (mặt nạ)
 keypoints2, descriptors2 = sift.detectAndCompute(grayimg2, None) # None là mask (mặt nạ)
 
+# Cách 1: Dùng BF để matching
 # Tạo đối tượng BFMatcher để so khớp keypoints và tính toán matches
 bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=False)
-matches = bf.match(descriptors1, descriptors2)
 
-# Cách 1:
-# Sắp xêp các matches theo khoảng cách giữa chúng
-matches = sorted(matches, key=lambda x: x.distance)
+# Sử dụng thuật toán k-nearest neighbors để tìm các điểm khớp
+matches = bf.knnMatch(descriptors1, descriptors2, k=2)
 
-# Vẽ các matches trên hai ảnh và lưu vào ảnh mới (img 3)
-img3 = cv2.drawMatches(grayimg1, keypoints1, grayimg2, keypoints2, matches[:50], None, matchColor = (0, 255, 0), singlePointColor=(255, 0, 0), flags=0)
+#----------------------------------------------------------
+# # Cách 2: Dùng FLANN để matching
+# # Tạo đối tượng FLANN Matcher
+# FLANN_INDEX_KDTREE = 1
+# index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+# search_params = dict(checks = 50)
+# flann = cv2.FlannBasedMatcher(index_params, search_params)
+# matches = flann.knnMatch(descriptors1, descriptors2, k=2)
+#-------------------------------------------------------------
 
+# Lọc các điểm khớp dựa trên mức độ giống nhau của chúng
+good = []
+for m, n in matches:
+    if m.distance < 0.7*n.distance:
+        good.append([m])
 
-#Cách 2
-# # Sử dụng thuật toán k-nearest neighbors để tìm các điểm khớp
-# matches = bf.knnMatch(descriptors1, descriptors2, k=2)
-#
-# # Lọc các điểm khớp dựa trên mức độ giống nhau của chúng
-# good = []
-# for m, n in matches:
-#     if m.distance < 0.7*n.distance:
-#         good.append([m])
-#
-# # Vẽ các điểm khớp được lọc và lưu vào img 3
-# img3 = cv2.drawMatchesKnn(grayimg1, keypoints1, grayimg2, keypoints2, good, None, matchColor=(0, 255, 0), matchesMask=None, singlePointColor=(255, 0, 0), flags=0)
-
+# Vẽ các điểm khớp được lọc và lưu vào img 3
+img3 = cv2.drawMatchesKnn(grayimg1, keypoints1, grayimg2, keypoints2, good, None, matchColor=(0, 255, 0), matchesMask=None, singlePointColor=(255, 0, 0), flags=0)
 
 # result
 img3 = cv2.resize(img3, (1380, 720))

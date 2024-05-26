@@ -8,4 +8,76 @@ Parameters:
       một hình, nơi có sự thay đổi đáng kể về độ sáng hoặc cấu trúc. Các điểm cực tiếu giống cạnh thường đáng tin cậy và
       đặc trưng hơn so với các điểm chính được phát hiện trong các khu vực mịn. Chúng quan trọng vì chúng thường tương
       ứng với các đặc điểm định rõ trong ảnh, chẳng hạn như góc hoặc cạnh. Có khả năng được so khớp đúng qua các hình ảnh
+Homography:
+    * cv2.RANSAC:
+    - Đây là phương pháp ước lượng được sử dụng để tìm ma trân homography
+    - RANSAC (random sample consensus) là thuật toán dùng để ước lượng các tham số của mô hình từ một tập hợp dữ liệu có
+    chứa nhiễu
+    - RANSAC giúp xác định ma trận homography tốt nhất bằng cách loại bỏ các điểm khớp không phù hợp (outliers) do nhiễu
+    hoặc lỗi phát sinh bằng cách thử nhiều lần với các tập con của dữ liệu và chon mô hình có số lượng inliers (điểm phù \
+    hợp) lớn nhất
 
+   H, mask = cv2.findHomography(
+    matched_keypoints_0,
+    matched_keypoints_cam,
+    method=cv2.RANSAC,
+    ransacReprojThreshold=3.0,
+    mask=None,
+    maxIters=2000,
+    confidence=0.995
+)
+
+    Các tham số chi tiết
+srcPoints:
+
+Loại: Mảng numpy.
+Mô tả: Các điểm nguồn trong ảnh gốc (ảnh đầu tiên).
+Định dạng: Mảng có kích thước (n, 1, 2) hoặc (n, 2), trong đó n là số lượng điểm.
+dstPoints:
+
+Loại: Mảng numpy.
+Mô tả: Các điểm đích trong ảnh mục tiêu (ảnh thứ hai).
+Định dạng: Mảng có kích thước (n, 1, 2) hoặc (n, 2), trong đó n là số lượng điểm.
+method:
+
+Loại: Integer.
+Mô tả: Phương pháp ước lượng homography. Các giá trị có thể là:
+0: Sử dụng phương pháp bình phương tối thiểu (Least Squares).
+cv2.RANSAC: Sử dụng phương pháp RANSAC để loại bỏ outliers.
+cv2.LMEDS: Sử dụng phương pháp Median Least Squares (LMEDS).
+cv2.RHO: Sử dụng phương pháp RHO.
+ransacReprojThreshold (chỉ khi method là cv2.RANSAC hoặc cv2.RHO):
+
+Loại: Float.
+Mô tả: Ngưỡng khoảng cách tái chiếu (re-projection error threshold) để xác định các inliers trong RANSAC. Giá trị mặc định thường là 3.0.
+Mặc định: 3.0.
+mask (tùy chọn):
+
+Loại: Mảng numpy.
+Mô tả: Một mảng mặt nạ đầu vào với cùng số lượng điểm như srcPoints, chỉ định điểm nào nên được sử dụng (1) hoặc bỏ qua (0).
+Định dạng: Mảng có kích thước (n, 1).
+maxIters (chỉ khi method là cv2.RANSAC hoặc cv2.RHO):
+
+Loại: Integer.
+Mô tả: Số lần lặp tối đa để thuật toán RANSAC hoặc RHO thực hiện để tìm homography tốt nhất.
+Mặc định: 2000.
+confidence (chỉ khi method là cv2.RANSAC hoặc cv2.RHO):
+
+Loại: Float.
+Mô tả: Mức độ tin cậy (confidence level) của thuật toán cho việc tìm ra một bộ các inliers tốt. Giá trị nằm trong khoảng từ 0 đến 1.
+Mặc định: 0.995.
+
+Tham số ransacReprojThreshold trong hàm cv2.findHomography được sử dụng để xác định ngưỡng khoảng cách tái chiếu (re-projection error threshold) trong phương pháp RANSAC. Đây là một thông số quan trọng giúp kiểm soát quá trình loại bỏ các điểm khớp không chính xác (outliers) và chỉ giữ lại các điểm khớp chính xác (inliers).
+
+Re-projection Error (Lỗi tái chiếu):
+
+Lỗi tái chiếu là sự khác biệt giữa vị trí thực tế của một điểm khớp trong ảnh thứ hai và vị trí được ước tính của nó sau khi biến đổi điểm từ ảnh thứ nhất qua ma trận homography.
+Công thức lỗi tái chiếu: error = sqrt((x' - x'')^2 + (y' - y'')^2)
+(x', y'): Tọa độ của điểm khớp trong ảnh thứ hai.
+(x'', y''): Tọa độ của điểm khớp được tính toán từ ma trận homography.
+
+Ngưỡng ransacReprojThreshold:
+
+ransacReprojThreshold là ngưỡng khoảng cách lỗi tái chiếu để quyết định xem một điểm khớp có được coi là inlier hay không.
+Nếu lỗi tái chiếu của một điểm khớp nhỏ hơn hoặc bằng giá trị của ransacReprojThreshold, điểm đó được coi là inlier.
+Nếu lỗi tái chiếu lớn hơn giá trị của ransacReprojThreshold, điểm đó được coi là outlier.
