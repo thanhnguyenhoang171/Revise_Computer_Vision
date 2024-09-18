@@ -16,7 +16,7 @@ while cap.isOpened():
     for x, y, w, h in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
     # Display the result
-    cv2.imshow("Face Detection with SIFT and Cascade Classifier", frame)
+    cv2.imshow("Face Detection with Cascade Classifier", frame)
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
